@@ -67,10 +67,14 @@ func main() {
 	ensureGithubToken()
 	checkCleanRepo()
 	version := bumpVersion(releaseType)
-	make("clean")
-	make("binaries")
+	envVars := map[string]string{
+		"DOCKERNAMESPACE": "arangodb",
+		"DOCKERTAG":       version,
+	}
+	make("clean", envVars)
+	make("binaries", envVars)
 	createSHA256Sums()
-	make("docker-push-version")
+	make("docker-push-version", envVars)
 	gitTag(version)
 	githubCreateRelease(version)
 	bumpVersion("devel")
@@ -100,8 +104,8 @@ func checkCleanRepo() {
 	}
 }
 
-func make(target string) {
-	if err := run("make", target); err != nil {
+func make(target string, envVars map[string]string) {
+	if err := run("make", []string{target}, envVars); err != nil {
 		log.Fatalf("Failed to make %s: %v\n", target, err)
 	}
 }
@@ -141,19 +145,19 @@ func gitCommitAll(message string) {
 		"--all",
 		"-m", message,
 	}
-	if err := run("git", args...); err != nil {
+	if err := run("git", args, nil); err != nil {
 		log.Fatalf("Failed to commit: %v\n", err)
 	}
-	if err := run("git", "push"); err != nil {
+	if err := run("git", []string{"push"}, nil); err != nil {
 		log.Fatalf("Failed to push commit: %v\n", err)
 	}
 }
 
 func gitTag(version string) {
-	if err := run("git", "tag", version); err != nil {
+	if err := run("git", []string{"tag", version}, nil); err != nil {
 		log.Fatalf("Failed to tag: %v\n", err)
 	}
-	if err := run("git", "push", "--tags"); err != nil {
+	if err := run("git", []string{"push", "--tags"}, nil); err != nil {
 		log.Fatalf("Failed to push tags: %v\n", err)
 	}
 }
@@ -184,7 +188,7 @@ func githubCreateRelease(version string) {
 		"--tag", version,
 		"--draft",
 	}
-	if err := run(ghRelease, args...); err != nil {
+	if err := run(ghRelease, args, nil); err != nil {
 		log.Fatalf("Failed to create github release: %v\n", err)
 	}
 	// Upload binaries
@@ -203,7 +207,7 @@ func githubCreateRelease(version string) {
 			"--name", name,
 			"--file", filepath.Join(binFolder, file),
 		}
-		if err := run(ghRelease, args...); err != nil {
+		if err := run(ghRelease, args, nil); err != nil {
 			log.Fatalf("Failed to upload asset '%s': %v\n", name, err)
 		}
 	}
@@ -214,13 +218,19 @@ func githubCreateRelease(version string) {
 		"--repo", ghRepo,
 		"--tag", version,
 	}
-	if err := run(ghRelease, args...); err != nil {
+	if err := run(ghRelease, args, nil); err != nil {
 		log.Fatalf("Failed to finalize github release: %v\n", err)
 	}
 }
 
-func run(cmd string, args ...string) error {
+func run(cmd string, args []string, envVars map[string]string) error {
 	c := exec.Command(cmd, args...)
+	if envVars != nil {
+		c.Env = append(c.Env, os.Environ()...)
+		for k, v := range envVars {
+			c.Env = append(c.Env, fmt.Sprintf("%s=%s", k, v))
+		}
+	}
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	return c.Run()

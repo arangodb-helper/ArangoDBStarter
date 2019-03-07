@@ -1,7 +1,7 @@
-FROM alpine:3.4
-MAINTAINER Max Neunhoeffer <max@arangodb.com>
+FROM scratch
+ARG GOARCH=amd64
 
-COPY bin/linux/amd64/arangodb /app/
+COPY bin/linux/${GOARCH}/arangodb /app/
 
 EXPOSE 8528 
 

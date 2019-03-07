@@ -27,6 +27,8 @@ To make a release you must have:
 
 - A github access token in `~/.arangodb/github-token` that has read/write access
   for this repository.
+- On OS/X, set an environment variable:
+  `export MANIFESTAUTH=--username=<your-docker-hub-account> --password=<your-docker-hub-password>`
 - Push permission for the current docker account (`docker login <your-docker-hub-account>`)
   for the `arangodb` docker hub namespace.
 - The latest checked out `master` branch of this repository.
