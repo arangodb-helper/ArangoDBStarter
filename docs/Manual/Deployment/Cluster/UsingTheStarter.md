@@ -1,8 +1,17 @@
 Using the ArangoDB Starter
 ==========================
 
-This section describes how to start a Cluster using the tool [_Starter_](../../Programs/Starter/README.md)
-(the _arangodb_ binary program).
+This section describes how to start a Cluster using the tool
+[_Starter_](../../Programs/Starter/README.md) (the _arangodb_ executable).
+
+{% hint 'warning' %}
+It is **strongly suggested** to **not** run the _ArangoDB Starter_ process
+(_arangodb_) as system user with full privileges, e.g. _root_ under Linux.
+
+We suggest to create a dedicated system user with limited privileges for this purpose.
+Please refer to the [Linux user used to run _arangodb_](../ArangoDBStarter/README.md#linux-user-used-to-run-arangodb)
+section of the Starter Deployment page for further details.
+{% endhint %}
 
 Local Tests
 -----------
@@ -32,8 +41,8 @@ Once all the processes started by the _Starter_ are up and running, and joined t
 Cluster (this may take a while depending on your system), the _Starter_ will inform
 you where to connect the Cluster from a Browser, shell or your program.
 
-For a full list of options of the _Starter_ please refer to [this](../../Programs/Starter/Options.md)
-section.
+For a full list of options of the _Starter_ please refer to the
+[Starter Options](../../Programs/Starter/Options.md) page.
 
 Using the ArangoDB Starter in Docker
 ------------------------------------

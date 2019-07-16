@@ -9,12 +9,10 @@ upgrade to a new hotfix, or to perform an upgrade to a new minor version of Aran
 Please refer to the [Upgrade Paths](../GeneralInfo/README.md#upgrade-paths) section
 for detailed information.
 
-**Important:** 
-
-- Rolling upgrades of Cluster setups from 3.2 to 3.3 are only supported
-  from versions 3.2.15 and 3.3.9.
-- Rolling upgrades of Cluster setups from 3.3 to 3.4 are only supported
-  from versions 3.3.20 and 3.4.0.
+{% hint 'warning' %}
+- Rolling upgrades of Cluster setups from 3.3 to 3.4 are only supported from versions 3.3.20 and 3.4.0.
+- Rolling upgrades of Cluster setups from 3.2 to 3.3 are only supported from versions 3.2.15 and 3.3.9.
+{% endhint %}
 
 ## Upgrade Scenarios
 

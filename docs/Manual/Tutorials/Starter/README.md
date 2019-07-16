@@ -1,21 +1,31 @@
 # Starting an ArangoDB cluster or database the easy way
 
-Starting an ArangoDB cluster involves starting various servers with
-different roles (agents, dbservers & coordinators).
+Starting an ArangoDB _Cluster_ involves starting various servers with
+different roles (_Agents_, _DBServers_ & _Coordinators_).
 
-The ArangoDB Starter is designed to make it easy to start and
-maintain an ArangoDB cluster or single server database.
+The _ArangoDB Starter_ is designed to make it easy to start and
+maintain ArangoDB _Cluster_, _Active Failover_ or _Single Instance_ setups.
 
-Besides starting and maintaining ArangoDB deployments, the starter also provides
-various commands to create TLS certificates & JWT token secrets to secure your
+Besides starting and maintaining ArangoDB deployments, the _Starter_ also provides
+various commands to create _TLS_ certificates & _JWT_ _token secrets_ to secure your
 ArangoDB deployment.
 
 ## Installation
 
-The ArangoDB starter (`arangodb`) comes with all current distributions of ArangoDB.
+The _ArangoDB Starter_ (`arangodb`) comes with all current distributions of ArangoDB.
 
 If you want a specific version, download the precompiled binary via the
 [GitHub releases page](https://github.com/arangodb-helper/arangodb/releases).
+
+## Starting the _Starter_: best practices
+
+{% hint 'warning' %}
+It is **strongly suggested** to **not** run the _ArangoDB Starter_ process
+(_arangodb_) from a system _user_ with full privileges, e.g. _root_ under Linux.
+We suggest creating a dedicated, limited-privileges _user_ for this purpose.
+
+Please refer to the [Linux user used to run _arangodb_](../../Deployment/ArangoDBStarter/README.md#linux-user-used-to-run-arangodb) 
+section of the Starter Deployment page for further details.
 
 ## Starting a cluster
 

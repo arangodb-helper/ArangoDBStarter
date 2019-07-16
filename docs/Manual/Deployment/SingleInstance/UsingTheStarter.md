@@ -1,8 +1,17 @@
 Using the ArangoDB Starter
 ==========================
 
-This section describes how to start an ArangoDB stand-alone instance using the tool
-[_Starter_](../../Programs/Starter/README.md) (the _arangodb_ binary program).
+This section describes how to start an ArangoDB _Single Instance_ using the tool
+[_Starter_](../../Programs/Starter/README.md) (the _arangodb_ executable).
+
+{% hint 'warning' %}
+It is **strongly suggested** to **not** run the _ArangoDB Starter_ process
+(_arangodb_) as system user with full privileges, e.g. _root_ under Linux.
+
+We suggest to create a dedicated system user with limited privileges for this purpose.
+Please refer to the [Linux user used to run _arangodb_](../ArangoDBStarter/README.md#linux-user-used-to-run-arangodb)
+section of the Starter Deployment page for further details.
+{% endhint %}
 
 Local Start
 -----------
