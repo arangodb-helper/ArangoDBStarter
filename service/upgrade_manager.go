@@ -171,10 +171,11 @@ const (
 // UpgradePlanEntry is the JSON structure that describes a single entry
 // in an upgrade plan.
 type UpgradePlanEntry struct {
-	PeerID   string           `json:"peer_id"`
-	Type     UpgradeEntryType `json:"type"`
-	Failures int              `json:"failures,omitempty"`
-	Reason   string           `json:"reason,omitempty"`
+	PeerID        string           `json:"peer_id"`
+	Type          UpgradeEntryType `json:"type"`
+	Failures      int              `json:"failures,omitempty"`
+	Reason        string           `json:"reason,omitempty"`
+	WithoutResign bool             `json:"withoutResign,omitempty"`
 }
 
 // CreateStatusServer creates a UpgradeStatusServer for the given entry.
@@ -255,6 +256,7 @@ func (m *upgradeManager) StartDatabaseUpgrade(ctx context.Context, forceMinorUpg
 
 	// Check if we can upgrade from running to binary versions
 	specialUpgradeFrom346 := false
+	specialUpgradeFrom3614 := false
 	rules := upgraderules.CheckUpgradeRules
 	if forceMinorUpgrade {
 		rules = upgraderules.CheckSoftUpgradeRules
@@ -266,6 +268,14 @@ func (m *upgradeManager) StartDatabaseUpgrade(ctx context.Context, forceMinorUpg
 		}
 		if from.CompareTo("3.4.6") == 0 {
 			specialUpgradeFrom346 = true
+		}
+		subint, found := from.SubInt()
+		if !found {
+			subint = 0
+	}
+		if (from.Major() == 3 && from.Minor() <= 6 && subint <= 14) ||
+		   (from.Major() == 3 && from.Minor() == 7 && subint <= 12) {
+			specialUpgradeFrom3614 = true
 		}
 	}
 
@@ -403,8 +413,9 @@ func (m *upgradeManager) StartDatabaseUpgrade(ctx context.Context, forceMinorUpg
 		for _, p := range config.AllPeers {
 			if p.HasDBServer() {
 				plan.Entries = append(plan.Entries, UpgradePlanEntry{
-					Type:   UpgradeEntryTypeDBServer,
-					PeerID: p.ID,
+					Type:          UpgradeEntryTypeDBServer,
+					PeerID:        p.ID,
+					WithoutResign: specialUpgradeFrom3614,
 				})
 			}
 		}
@@ -993,7 +1004,10 @@ func (m *upgradeManager) processUpgradePlan(ctx context.Context, plan UpgradePla
 		m.upgradeServerType = definitions.ServerTypeDBServer
 		m.updateNeeded = true
 		upgrade := func() error {
-			if err := m.upgradeManagerContext.RestartServer(definitions.ServerTypeDBServer); err != nil {
+			if firstEntry.WithoutResign {
+			  fmt.Printf("Without resign")
+		  }
+			if err := m.upgradeManagerContext.RestartServer(definitions.ServerTypeDBServerNoResign); err != nil {
 				return recordFailure(errors.Wrap(err, "Failed to restart dbserver"))
 			}
 
